@@ -1,0 +1,17 @@
+
+- name: Deploy Azure resources
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create resource group
+      azure_rm_resourcegroup:
+        name: test-ansible-rg
+        location: eastus
+        state: present
+
+    - name: Create virtual network
+      azure_rm_virtualnetwork:
+        resource_group: test-ansible-rg
+        name: my_virtual_network
+        address_prefixes: "10.0.0.0/16"
+        state: present

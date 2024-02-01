@@ -1,0 +1,5 @@
+[azure]
+my_vm ansible_host=<public_ip_address> ansible_user=<username> ansible_password=<password>
+
+[azure:vars]
+ansible_python_interpreter=/usr/bin/python3
