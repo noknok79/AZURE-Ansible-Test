@@ -5,10 +5,10 @@ eastus:
   version: latest
 
 westus: 
-  os: centos
-  sku: 7_8
-  publisher: OpenLogic
-  version: latest
+        os: centos
+        sku: 8_5-gen2
+        publisher: OpenLogic
+        version: latest
 
 centralus:
   os: debian

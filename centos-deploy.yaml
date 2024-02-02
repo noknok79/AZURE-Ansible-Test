@@ -9,36 +9,36 @@
   #     name: vars
   - name: Create resource group
     azure_rm_resourcegroup:
-      name: "{{ item }}-Ansible2RG"
+      name: "CentOSAnsible-{{ item }}"
       location: "{{ item }}"
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
   - name: Create virtual network
     azure_rm_virtualnetwork:
-      resource_group: "{{ item }}-Ansible2RG"
+      resource_group: "CentOSAnsible-{{ item }}"
       name: "{{ item }}-myVnet"
       address_prefixes: "10.0.0.0/16"
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
   - name: Add subnet
     azure_rm_subnet:
-      resource_group: "{{ item }}-Ansible2RG"
+      resource_group: "CentOSAnsible-{{ item }}"
       name: "{{ item }}-mySubnet"
       address_prefix: "10.0.1.0/24"
       virtual_network: "{{ item }}-myVnet"
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
   - name: Create public IP address
     azure_rm_publicipaddress:
-      resource_group:  "{{ item }}-Ansible2RG"
+      resource_group:  "CentOSAnsible-{{ item }}"
       allocation_method: Static
       name: "{{ item }}-myPublicIP"
     register: "output_ip_address"
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
   - name: Create Network Security Group that allows SSH   
     azure_rm_securitygroup:
-      resource_group: "{{ item }}-Ansible2RG"
+      resource_group: "CentOSAnsible-{{ item }}"
       name: "{{ item }}-myNetworkSecurityGroup"
       rules:
         - name: SSH
@@ -47,21 +47,21 @@
           access: Allow
           priority: 1001
           direction: Inbound
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
   - name: Create virtual network interface card       
     azure_rm_networkinterface:
-      resource_group: "{{ item }}-Ansible2RG"
+      resource_group: "CentOSAnsible-{{ item }}"
       name: "{{ item }}-myNIC"
       virtual_network: "{{ item }}-myVnet"
       subnet: "{{ item }}-mySubnet"
       public_ip_name: "{{ item }}-myPublicIP"
       security_group: "{{ item }}-myNetworkSecurityGroup"
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
   - name: Create VM
     azure_rm_virtualmachine:
-      resource_group: "{{ item }}-Ansible2RG"
+      resource_group: "CentOSAnsible-{{ item }}"
       name: "{{ item }}-myVM"
       vm_size: Standard_DS1_v2
       admin_username: azureuser
@@ -76,6 +76,6 @@
         publisher: OpenLogic
         sku: '7.5'
         version: latest
-    loop: ["eastus", "westus", "centralus"]
+    loop: ["eastus", "southeastasia"]
 
-#loop: "["eastus", "westus", "centralus"]"
+#loop: "["eastus", "southeastasia"]"
