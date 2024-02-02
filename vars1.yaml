@@ -1,0 +1,35 @@
+- hosts: localhost
+  tasks:
+    - name: Create dictionary
+      debug:
+        msg: "Creating dictionary"
+      vars:
+        regions: {
+          eastus: [
+            {
+              os: ubuntu,
+              sku: '18.04-lt',
+              publisher: canonical,
+              version: latest,
+              region: eastus
+            }
+          ],
+          westus: [
+            {
+              os: centos,
+              sku: 7_8,
+              publisher: OpenLogic,
+              version: latest,
+              region: westus
+            }
+          ],
+          centralus: [
+            {
+              os: debian,
+              sku: 10,
+              publisher: Debian,
+              version: latest,
+              region: centralus
+            }
+          ]
+        }

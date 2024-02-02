@@ -1,0 +1,80 @@
+- name: Test Azure VM Creation
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Test resource group creation
+    azure_rm_resourcegroup_info:
+      name: myResourceGroup
+    register: resource_group_info
+  - name: Assert resource group exists
+    assert:
+      that:
+        - resource_group_info is defined
+        - resource_group_info.results | length > 0
+        - resource_group_info.results[0].name == 'myResourceGroup'
+  - name: Test virtual network creation
+    azure_rm_virtualnetwork_info:
+      resource_group: myResourceGroup
+      name: myVnet
+    register: virtual_network_info
+  - name: Assert virtual network exists
+    assert:
+      that:
+        - virtual_network_info is defined
+        - virtual_network_info.results | length > 0
+        - virtual_network_info.results[0].name == 'myVnet'
+  - name: Test subnet creation
+    azure_rm_subnet_info:
+      resource_group: myResourceGroup
+      name: mySubnet
+    register: subnet_info
+  - name: Assert subnet exists
+    assert:
+      that:
+        - subnet_info is defined
+        - subnet_info.results | length > 0
+        - subnet_info.results[0].name == 'mySubnet'
+  - name: Test public IP address creation
+    azure_rm_publicipaddress_info:
+      resource_group: myResourceGroup
+      name: myPublicIP
+    register: public_ip_info
+  - name: Assert public IP address exists
+    assert:
+      that:
+        - public_ip_info is defined
+        - public_ip_info.results | length > 0
+        - public_ip_info.results[0].name == 'myPublicIP'
+  - name: Test network security group creation
+    azure_rm_securitygroup_info:
+      resource_group: myResourceGroup
+      name: myNetworkSecurityGroup
+    register: security_group_info
+  - name: Assert network security group exists
+    assert:
+      that:
+        - security_group_info is defined
+        - security_group_info.results | length > 0
+        - security_group_info.results[0].name == 'myNetworkSecurityGroup'
+  - name: Test virtual network interface card creation
+    azure_rm_networkinterface_info:
+      resource_group: myResourceGroup
+      name: myNIC
+    register: nic_info
+  - name: Assert virtual network interface card exists
+    assert:
+      that:
+        - nic_info is defined
+        - nic_info.results | length > 0
+        - nic_info.results[0].name == 'myNIC'
+  - name: Test VM creation
+    azure_rm_virtualmachine_info:
+      resource_group: myResourceGroup
+      name: myVM
+    register: vm_info
+  - name: Assert VM exists
+    assert:
+      that:
+        - vm_info is defined
+        - vm_info.results | length > 0
+        - vm_info.results[0].name == 'myVM'

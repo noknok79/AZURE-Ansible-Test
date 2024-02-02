@@ -1,35 +1,45 @@
 - name: Create Azure VM
   hosts: localhost
   connection: local
-  tasks:   
+  tasks:
+  # - name: Include variables
+  #   include_vars:
+  #     file: vars1.yaml
+  #     file: "{{  lookup('file', 'vars1.yaml') }}"
+  #     name: vars
   - name: Create resource group
     azure_rm_resourcegroup:
-      name: test-ansible-rg
-      location: eastus
+      name: "{{ item }}-Ansible2RG"
+      location: "{{ item }}"
+    loop: ["eastus", "westus", "centralus"]
+
   - name: Create virtual network
     azure_rm_virtualnetwork:
-      resource_group: test-ansible-rg
-      name: myVnet
+      resource_group: "{{ item }}-Ansible2RG"
+      name: "{{ item }}-myVnet"
       address_prefixes: "10.0.0.0/16"
+    loop: ["eastus", "westus", "centralus"]
+
   - name: Add subnet
     azure_rm_subnet:
-      resource_group: test-ansible-rg
-      name: mySubnet
+      resource_group: "{{ item }}-Ansible2RG"
+      name: "{{ item }}-mySubnet"
       address_prefix: "10.0.1.0/24"
-      virtual_network: myVnet
+      virtual_network: "{{ item }}-myVnet"
+    loop: ["eastus", "westus", "centralus"]
+
   - name: Create public IP address
     azure_rm_publicipaddress:
-      resource_group: test-ansible-rg
+      resource_group:  "{{ item }}-Ansible2RG"
       allocation_method: Static
-      name: myPublicIP
-    register: output_ip_address
-  - name: Public IP of VM
-    debug:
-      msg: "The public IP is {{ output_ip_address.state.ip_address }}."
-  - name: Create Network Security Group that allows SSH
+      name: "{{ item }}-myPublicIP"
+    register: "output_ip_address"
+    loop: ["eastus", "westus", "centralus"]
+
+  - name: Create Network Security Group that allows SSH   
     azure_rm_securitygroup:
-      resource_group: test-ansible-rg
-      name: myNetworkSecurityGroup
+      resource_group: "{{ item }}-Ansible2RG"
+      name: "{{ item }}-myNetworkSecurityGroup"
       rules:
         - name: SSH
           protocol: Tcp
@@ -37,27 +47,35 @@
           access: Allow
           priority: 1001
           direction: Inbound
-  - name: Create virtual network interface card
+    loop: ["eastus", "westus", "centralus"]
+
+  - name: Create virtual network interface card       
     azure_rm_networkinterface:
-      resource_group: test-ansible-rg
-      name: myNIC
-      virtual_network: myVnet
-      subnet: mySubnet
-      public_ip_name: myPublicIP
-      security_group: myNetworkSecurityGroup
+      resource_group: "{{ item }}-Ansible2RG"
+      name: "{{ item }}-myNIC"
+      virtual_network: "{{ item }}-myVnet"
+      subnet: "{{ item }}-mySubnet"
+      public_ip_name: "{{ item }}-myPublicIP"
+      security_group: "{{ item }}-myNetworkSecurityGroup"
+    loop: ["eastus", "westus", "centralus"]
+
   - name: Create VM
     azure_rm_virtualmachine:
-      resource_group: test-ansible-rg
-      name: myVM
+      resource_group: "{{ item }}-Ansible2RG"
+      name: "{{ item }}-myVM"
       vm_size: Standard_DS1_v2
       admin_username: azureuser
+      managed_disk_type: Standard_LRS
       ssh_password_enabled: false
       ssh_public_keys:
         - path: /home/azureuser/.ssh/authorized_keys
           key_data: "{{ lookup('file', '/home/azureuser/.ssh/authorized_keys/id_rsa.pub') }}"
-      network_interfaces: myNIC
+      network_interfaces: "{{ item }}-myNIC"
       image:
-        offer: CentOS
+        os: centos
+        sku: 7_8
         publisher: OpenLogic
-        sku: '7.5'
         version: latest
+    loop: ["eastus", "westus", "centralus"]
+
+#loop: "["eastus", "westus", "centralus"]"
