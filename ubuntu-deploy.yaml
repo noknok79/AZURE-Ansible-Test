@@ -82,7 +82,13 @@
         version: latest
     loop: ["eastus", "westus"]
   
-  # - name: Create VM Image
+- name: Run az-command.sh
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Execute az-command.sh
+      command: ./az-command.sh
+    # - name: Create VM Image
   #   azure_rm_image:
   #     resource_group: "UbuntuAnsible-{{ item }}"
   #     name: "{{ item }}-myVMImage"
