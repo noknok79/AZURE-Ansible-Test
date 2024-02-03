@@ -13,8 +13,8 @@
     - name: Execute the script
       command: sh /home/azureuser/install-app.sh
 
-    - name: Execute the app
-      command: terraform version; docker version; kubectl version; ansible --version
+    # - name: Execute the app
+    #   command: terraform version; docker version; kubectl version; ansible --version
 
 
 

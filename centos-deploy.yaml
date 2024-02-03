@@ -13,14 +13,14 @@
       location: "{{ item }}"
       tags:
         name: delete
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
   - name: Create virtual network
     azure_rm_virtualnetwork:
       resource_group: "CentOSAnsible-{{ item }}"
       name: "{{ item }}-myVnet"
       address_prefixes: "10.0.0.0/16"
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
   - name: Add subnet
     azure_rm_subnet:
@@ -28,7 +28,7 @@
       name: "{{ item }}-mySubnet"
       address_prefix: "10.0.1.0/24"
       virtual_network: "{{ item }}-myVnet"
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
   - name: Create public IP address
     azure_rm_publicipaddress:
@@ -36,7 +36,7 @@
       allocation_method: Static
       name: "{{ item }}-myPublicIP"
     register: "output_ip_address"
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
   - name: Create Network Security Group that allows SSH   
     azure_rm_securitygroup:
@@ -49,7 +49,7 @@
           access: Allow
           priority: 1001
           direction: Inbound
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
   - name: Create virtual network interface card       
     azure_rm_networkinterface:
@@ -59,7 +59,7 @@
       subnet: "{{ item }}-mySubnet"
       public_ip_name: "{{ item }}-myPublicIP"
       security_group: "{{ item }}-myNetworkSecurityGroup"
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
   - name: Create VM
     azure_rm_virtualmachine:
@@ -78,6 +78,6 @@
         publisher: OpenLogic
         sku: '7.5'
         version: latest
-    loop: ["eastus", "southeastasia"]
+    loop: ["eastus", "westus"]
 
 #loop: "["eastus", "southeastasia"]"
