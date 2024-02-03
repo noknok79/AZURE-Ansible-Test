@@ -1,0 +1,7 @@
+- name: Delete install-app.sh file
+  hosts: ubuntu
+  tasks:
+    - name: Delete file
+      file:
+        path: ~/install-app.sh
+        state: absent

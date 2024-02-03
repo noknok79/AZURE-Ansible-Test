@@ -1,0 +1,37 @@
+---
+- name: Copy and run script
+  hosts: ubuntu
+  remote_user: azureuser
+  become: yes
+  tasks:
+    - name: Transfer the script
+      copy:
+        src: install-app.sh
+        dest: /home/azureuser/install-app.sh
+        mode: 0777
+
+    - name: Execute the script
+      command: sh /home/azureuser/install-app.sh
+
+    - name: Execute the app
+      command: terraform version; docker version; kubectl version; ansible --version
+
+
+
+
+
+
+
+
+
+# ---
+# - name: Transfer and execute a script.
+#   hosts: all
+#   remote_user: azureuser
+#   become: yes
+#   tasks:
+#      - name: Transfer the script
+#        copy: src=install-app.sh dest=~ mode=0777
+
+#      - name: Execute the script
+#        command: sh /home/azureuser/install-app.sh

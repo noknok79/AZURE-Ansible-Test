@@ -1,0 +1,13 @@
+
+172.206.207.69
+4.246.178.115
+20.102.121.234
+4.193.101.188
+4.193.136.215
+Name                  OS     Offer
+--------------------  -----  ----------------------------
+eastus-myVM           Linux  CentOS
+QuickstartAnsible-vm  Linux  CentOS
+eastus-myVM           Linux  0001-com-ubuntu-server-jammy
+southeastasia-myVM    Linux  CentOS
+southeastasia-myVM    Linux  0001-com-ubuntu-server-jammy
