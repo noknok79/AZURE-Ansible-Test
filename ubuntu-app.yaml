@@ -1,0 +1,183 @@
+---
+- name: Copy and run script
+  hosts: ubuntu
+  remote_user: azureuser
+  become: yes
+  tasks:  
+  - name: Read os-release file
+    shell: cat /etc/os-release
+    register: os_release 
+  - name: Check for Ubuntu
+    when: "'ubuntu' in os_release.stdout"
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - gnupg
+      - software-properties-common
+      - curl
+
+  - name: Download Docker installation script
+    command: curl -fsSL https://get.docker.com -o get-docker.sh
+    become: yes
+    become_user: root
+    args:
+      chdir: ~
+
+  - name: Execute Docker installation script
+    script: get-docker.sh
+    become: yes
+    become_user: root
+    args:
+      chdir: ~ 
+
+  - name: Enable Docker service
+    systemd:
+      name: docker.service
+      enabled: yes
+
+  - name: Install gnupg, software-properties-common, and curl
+    when: "'ubuntu' in os_release.stdout"
+    apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - gnupg
+      - software-properties-common
+      - curl     
+
+  - name: Add HashiCorp GPG key
+    apt_key:
+      url: https://apt.releases.hashicorp.com/gpg
+      state: present
+
+  - name: Add HashiCorp repository
+    apt_repository:
+      repo: "deb [arch=amd64] https://apt.releases.hashicorp.com focal main"
+      state: present
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+
+  - name: Install Terraform
+    apt:
+      name: terraform
+      state: present
+
+  - name: Download Docker Compose
+    when: "'ubuntu' in os_release.stdout"
+    command: curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}" -o /usr/local/bin/docker-compose
+    become: yes
+    become_user: root
+
+  - name: Set executable permissions for Docker Compose
+    command: chmod +x /usr/local/bin/docker-compose
+    become: yes
+    become_user: root
+
+  - name: Update apt cache
+    apt:
+      update_cache: yes
+      
+  - name: Install apt-transport-https, gnupg2, and curl
+    apt:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - apt-transport-https
+      - gnupg2
+      - curl
+
+  # - name: Add GPG key for Google Cloud packages
+  #   shell: curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+  #   become: yes
+  #   become_user: root
+
+  # - name: Echo Debian package for Kubernetes
+  #   command: echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
+  #   become: yes
+  #   become_user: root
+
+  # - name: Update apt cache
+  #   apt:
+  #     update_cache: yes
+
+  # - name: Update apt cache and install kubectl
+  #   apt:
+  #     name: kubectl
+  #     ansible.builtin.shell: ansible-galaxy collection install kubernetes.core
+  #     state: present
+
+  # - name: Install kubectl
+  #   apt:
+  #     name: kubectl
+  #     state: present
+
+  - name: Install apt-transport-https
+    apt:
+      name: apt-transport-https
+      state: present
+
+  - name: Add Kubernetes apt-key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: Add Kubernetes apt repository
+    apt_repository:
+      repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+
+  - name: Install kubectl
+    apt:
+      name: kubectl
+      state: present
+
+  - name: Ansible Dependencies Python
+    apt:
+      name: python3-pip
+      state: present
+
+  - name: Install Ansible Azure Collection
+    pip:
+      name: ansible[azure]
+      state: present
+      
+  - name: Install PIP3 Azure
+    apt:
+      name: python3-pip
+      state: present
+
+  - name: Ansible Galaxy
+    ansible.builtin.shell: ansible-galaxy collection install azure.azcollection
+    become: yes
+    become_user: root
+
+  - name: copy requirements.txt file
+    copy:
+      src: requirements-azure.txt
+      dest: ~/requirements-azure.txt
+
+  - name: Install PIP3
+    pip:
+      requirements: ~/requirements-azure.txt
+
+  - name: Package upgrade packaging
+    pip:
+      name: packaging==20.9
+      state: latest
+
+  - name: Package upgrade portalocker
+    pip:
+      name: portalocker~=1.2
+      state: latest
+
+  # - name: Install curl
+  #   apt:
+  #     name: curl
+  #     state: present
+
+  - name: Install Azure CLI
+    shell: curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
