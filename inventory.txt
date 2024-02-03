@@ -1,3 +1,5 @@
 
 40.112.168.59 ansible_user=azureuser ansible_ssh_private_key_file=/home/azureuser/.ssh/authorized_keys/id_rsa
+40.83.177.179 ansible_user=azureuser ansible_ssh_private_key_file=/home/azureuser/.ssh/authorized_keys/id_rsa
 20.119.70.200 ansible_user=azureuser ansible_ssh_private_key_file=/home/azureuser/.ssh/authorized_keys/id_rsa
+20.25.8.149 ansible_user=azureuser ansible_ssh_private_key_file=/home/azureuser/.ssh/authorized_keys/id_rsa

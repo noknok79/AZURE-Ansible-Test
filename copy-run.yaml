@@ -1,6 +1,6 @@
 ---
 - name: Copy and run script
-  hosts: all
+  hosts: ubuntu
   remote_user: azureuser
   become: yes
   tasks:
