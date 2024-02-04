@@ -5,6 +5,7 @@
 # ms365enterprise
 # ansible-playbook centos-deploy.yaml
 # ansible-playbook centos-deploy.yaml
+# /ansibles-yaml
 # Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
@@ -34,7 +35,7 @@ stages:
           - task: PublishPipelineArtifact@1
             displayName: Publish Files to Pipeline
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)"
+              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
               artifact: "ms365ent-out"
               publishLocation: "pipeline"
           
@@ -50,7 +51,7 @@ stages:
           - task: PublishPipelineArtifact@1
             displayName: Publish Files to Pipeline
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)"
+              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
               artifact: "ms365ent-out"
               publishLocation: "pipeline"
           
@@ -63,7 +64,7 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 ansible-playbook centos-deploy.yaml
-              workingDirectory: '$(System.DefaultWorkingDirectory)/win365ent'
+              workingDirectory: '$(System.DefaultWorkingDirectory/ansibles-yaml'
           
 
   - stage: DeployUbuntVM
@@ -77,7 +78,7 @@ stages:
           - task: PublishPipelineArtifact@1
             displayName: Publish Files to Pipeline
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)"
+              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
               publishLocation: "pipeline"
           
           - task: AzureCLI@2
@@ -88,7 +89,7 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 ansible-playbook ubuntu-deploy.yaml
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
   
   - stage: InstallAppviaAnsible
     jobs:
@@ -101,7 +102,7 @@ stages:
           - task: PublishPipelineArtifact@1
             displayName: Publish Files to Pipeline
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)"
+              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
               publishLocation: "pipeline"
           
           - task: AzureCLI@2
@@ -112,7 +113,7 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 ansible-playbook ubuntu-app.yaml
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
           
            
           - task: AzureCLI@2
@@ -123,5 +124,5 @@ stages:
               scriptLocation: 'inlineScript'
               inlineScript: |
                 ansible-playbook centos-app.yaml
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
           
