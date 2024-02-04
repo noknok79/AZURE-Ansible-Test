@@ -39,9 +39,9 @@ stages:
               publishLocation: "pipeline"
           
 
-  - stage: MS365ENTResourcesPreparation
+  - stage: DeployCentosVM
     jobs:
-      - job: MS365ENTResources
+      - job: DeployCentosVM
         pool:
           vmImage: "ubuntu-latest"
           environment: $(MS365ENT_ENVIRONMENT)
