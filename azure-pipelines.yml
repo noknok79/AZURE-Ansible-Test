@@ -40,9 +40,9 @@ stages:
               publishLocation: "pipeline"
           
 
-  - stage: DeployCentosVM
+  - stage: DeployMultipleVM
     jobs:
-      - job: DeployCentosVM
+      - job: DeployMultipleVM
         pool:
           vmImage: "ubuntu-latest"
           environment: $(MS365ENT_ENVIRONMENT)
@@ -57,40 +57,16 @@ stages:
           
 
           - task: AzureCLI@2
-            displayName: Deploy VM resources Using Ansible
+            displayName: Deploy Multiple VM Using Ansible
             inputs:
               azureSubscription: 'ms365enterprise'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: |
-                ansible-playbook centos-deploy.yaml
+                ansible-playbook multi-vm-deploy.yaml
               workingDirectory: '$(System.DefaultWorkingDirectory/ansibles-yaml'
           
 
-  - stage: DeployUbuntVM
-    jobs:
-      - job: DeployUbuntVM
-        pool:
-          vmImage: "ubuntu-latest"
-          environment: $(MS365ENT_ENVIRONMENT)
-        continueOnError: true
-        steps:
-          - task: PublishPipelineArtifact@1
-            displayName: Publish Files to Pipeline
-            inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
-              publishLocation: "pipeline"
-          
-          - task: AzureCLI@2
-            displayName: Deploy Ubuntu VM
-            inputs:
-              azureSubscription: 'ms365enterprise'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: |
-                ansible-playbook ubuntu-deploy.yaml
-              workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
-  
   - stage: InstallAppviaAnsible
     jobs:
       - job: InstallAppviaAnsible
