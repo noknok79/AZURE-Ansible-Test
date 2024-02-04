@@ -81,6 +81,7 @@
                 # Install Ansible for Ubuntu
                 # Ubuntu
                 apt update -y
+                apt install python3-pip -y
                 pip3 install ansible[azure]
                 ansible-galaxy collection install azure.azcollection
                 pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt

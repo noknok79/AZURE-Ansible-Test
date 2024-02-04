@@ -2,16 +2,16 @@
   hosts: localhost
   connection: local
   tasks:
-    - name: Include variables 
-      include_vars: 
-        file: "vars1.yaml"
+    - name: Include variables
+      include_vars:
+        file: "multi-vm-deploy-var.yaml"
 
     - name: Create resource group
       azure_rm_resourcegroup:
         name: "{{ item.region }}-RG-{{ item.os }}"
         location: "{{ item.region }}"
       loop: "{{ locationregion }}"
-      
+
     - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: "{{ item.region }}-RG-{{ item.os }}"
@@ -19,23 +19,23 @@
         address_prefixes: "10.0.0.0/16"
       loop: "{{ locationregion }}"
 
-    - name: Add subnet
+    - name: Create subnet
       azure_rm_subnet:
         resource_group: "{{ item.region }}-RG-{{ item.os }}"
-        name: "{{ item.region }}-mySubnet-{{ item.region }}"
+        name: "{{ item.region }}-mySubnet-{{ item.os }}"
         address_prefix: "10.0.1.0/24"
         virtual_network: "{{ item.region }}-myVnet-{{ item.os }}"
       loop: "{{ locationregion }}"
 
     - name: Create public IP address
       azure_rm_publicipaddress:
-        resource_group:  "{{ item.region }}-RG-{{ item.os }}"
+        resource_group: "{{ item.region }}-RG-{{ item.os }}"
         allocation_method: Static
-        name: "{{ item.region }}-myPublicIP-{{ item.region }}"
+        name: "{{ item.region }}-myPublicIP-{{ item.os }}"
       register: "output_ip_address"
       loop: "{{ locationregion }}"
 
-    - name: Create Network Security Group that allows SSH   
+    - name: Create Network Security Group that allows SSH
       azure_rm_securitygroup:
         resource_group: "{{ item.region }}-RG-{{ item.os }}"
         name: "{{ item.region }}-myNetworkSecurityGroup-{{ item.os }}"
@@ -48,20 +48,20 @@
             direction: Inbound
       loop: "{{ locationregion }}"
 
-    - name: Create virtual network interface card       
+    - name: Create virtual network interface card
       azure_rm_networkinterface:
         resource_group: "{{ item.region }}-RG-{{ item.os }}"
-        name: "{{ item.region }}-myNICj-{{ item.os }}"
+        name: "{{ item.region }}-myNIC-{{ item.os }}"
         virtual_network: "{{ item.region }}-myVnet-{{ item.os }}"
-        subnet: "{{ item.region }}-mySubnet-{{ item.region }}"
-        public_ip_name: "{{ item.region }}-myPublicIP-{{ item.region }}"
+        subnet: "{{ item.region }}-mySubnet-{{ item.os }}"
+        public_ip_name: "{{ item.region }}-myPublicIP-{{ item.os }}"
         security_group: "{{ item.region }}-myNetworkSecurityGroup-{{ item.os }}"
       loop: "{{ locationregion }}"
 
     - name: Create VM
       azure_rm_virtualmachine:
-        resource_group: "{{ item.location }}-RG-{{ item.os }}"
-        name: "{{ item.location }}-myVnet-{{ item.os }}"
+        resource_group: "{{ item.region }}-RG-{{ item.os }}"
+        name: "{{ item.region }}-myVM-{{ item.os }}"
         vm_size: Standard_DS1_v2
         admin_username: azureuser
         managed_disk_type: Standard_LRS
@@ -69,15 +69,14 @@
         ssh_public_keys:
           - path: /home/azureuser/.ssh/authorized_keys
             key_data: "{{ lookup('file', '/home/azureuser/.ssh/authorized_keys/id_rsa.pub') }}"
-        network_interfaces: "{{ item.location }}-myNIC-{{ item.os }}"
-        loop: "{{ locationregion }}"
+        network_interfaces: "{{ item.region }}-myNIC-{{ item.os }}"
+        # loop: "{{ locationregion }}"
         image:
-          offer: "{{ osname.offer }}"  # Define the 'offer' variable here
+          offer: "{{ item.osname }}" # Define the 'offer' variable here
           publisher: "{{ item.publisher }}"
           sku: "{{ item.sku }}"
           version: "{{ item.version }}"
-      loop: 
-        - "{{ osname }}"
+      loop: "{{ locationregion }}"
 
   #loop: "["eastus", "southeastasia"]"
 
