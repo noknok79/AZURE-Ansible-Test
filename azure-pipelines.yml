@@ -33,12 +33,19 @@ stages:
         continueOnError: false
         steps:
           - task: PublishPipelineArtifact@1
-            displayName: Publish Files to Pipeline
+            displayName: Pushing YAML Files
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
-              artifact: "ms365ent-out"
-              publishLocation: "pipeline"
+              targetPath: '$(Pipeline.Workspace)'
+              artifact: 'ansible-out'
+              publishLocation: 'pipeline'
           
+          - task: PublishBuildArtifacts@1
+            displayName: Building YAML Files
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+              StoreAsTar: true
 
   - stage: DeployMultipleVM
     jobs:
@@ -48,24 +55,27 @@ stages:
           environment: $(MS365ENT_ENVIRONMENT)
         continueOnError: true
         steps:
+        
           - task: PublishPipelineArtifact@1
-            displayName: Publish Files to Pipeline
+            displayName: Build YAML Files for execution
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
-              artifact: "ms365ent-out"
-              publishLocation: "pipeline"
-          
+              targetPath: '$(Pipeline.Workspace)'
+              artifact: 'ansible-out'
+              publishLocation: 'pipeline'
 
+          - task: PublishBuildArtifacts@1
+            displayName: Multiple VM Deployment in Multple Region using Ansible Playbok
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
           - task: AzureCLI@2
-            displayName: Deploy Multiple VM Using Ansible
             inputs:
               azureSubscription: 'ms365enterprise'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
-              inlineScript: |
-                ansible-playbook multi-vm-deploy.yaml
-              workingDirectory: '$(System.DefaultWorkingDirectory/ansibles-yaml'
-          
+              inlineScript: 'ansible-playbook multi-vm-deploy.yaml'
+              workingDirectory: 'ansible-playbook ansibles-yaml/multi-vm-deploy.yaml'
 
   - stage: InstallAppviaAnsible
     jobs:
@@ -76,29 +86,32 @@ stages:
         continueOnError: true
         steps:
           - task: PublishPipelineArtifact@1
-            displayName: Publish Files to Pipeline
+            displayName: Pushing YAML Files
             inputs:
-              targetPath: "$(System.DefaultWorkingDirectory)/ansibles-yaml"
-              publishLocation: "pipeline"
+              targetPath: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
+              artifact: 'ansible'
+              publishLocation: 'pipeline'
+          - task: PublishBuildArtifacts@1
+            displayName: Building YAML Files
+            inputs:
+              PathtoPublish: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
           
           - task: AzureCLI@2
-            displayName: Install Ubuntu Apps via Ansible
+            displayName: Ubuntu Installaion using Ansible Playbok
             inputs:
               azureSubscription: 'ms365enterprise'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
-              inlineScript: |
-                ansible-playbook ubuntu-app.yaml
+              inlineScript: 'ansible-playbook ubuntu-app.yaml'
               workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
           
-           
           - task: AzureCLI@2
-            displayName: Install CentOS App via Ansible
+            displayName: Centos Installaion using Ansible Playbok
             inputs:
               azureSubscription: 'ms365enterprise'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
-              inlineScript: |
-                ansible-playbook centos-app.yaml
+              inlineScript: 'ansible-playbook ubuntu-app.yaml'
               workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
-          
