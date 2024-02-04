@@ -11,8 +11,6 @@
       azure_rm_resourcegroup:
         name: "CentOSAnsible-{{ item }}"
         location: "{{ item }}"
-        tags:
-          name: delete
       loop: ["eastus", "westus"]
 
     - name: Create virtual network

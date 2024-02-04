@@ -1,12 +1,16 @@
 ---
-osname:
-  - region: 'eastus'
-    os: ubuntu
-    sku: '18.04-lt'
-    publisher: canonical
-    version: latest
-  - region: 'southeastasia'
-    os: debian
-    sku: '10'
-    publisher: Debian
-    version: latest
+- name: Playbook Name
+  hosts: all
+  tasks:
+    - name: OSNAME
+      osname:
+        - region: 'eastus'
+          offer: 'ubuntu'
+          sku: '18.04-lt'
+          publisher: 'canonical'
+          version: latest
+        - region: 'west'
+          offer: 'CentOS'
+          sku: '7.5'
+          publisher: 'OpenLogic'
+          version: 'latest'

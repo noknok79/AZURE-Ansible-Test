@@ -1,14 +1,91 @@
-- name: Deploy Resource Group in Azure
+- name: Create Azure VM
   hosts: localhost
-  gather_facts: false
-
+  connection: local
   tasks:
-    - name: Create Resource Group
+    - name: Include variables 
+      include_vars: vars2.yaml
+  # - name: Include variables
+  #   include_vars:
+  #     file: vars2.yaml
+  #      file: "{{ lookup('file', 'vars2.yaml') }}"
+    - name: Create resource group
       azure_rm_resourcegroup:
-        name: myResourceGroup
-        location: eastus
-      register: rg_result
+        name: "CentOSAnsible-{{ item }}"
+        location: "{{ item }}"
+      loop: ["eastus", "westus"]
 
-    - name: Display Resource Group Information
-      debug:
-        var: rg_result
+    - name: Create virtual network
+      azure_rm_virtualnetwork:
+        resource_group: "CentOSAnsible-{{ item }}"
+        name: "{{ item }}-myVnet"
+        address_prefixes: "10.0.0.0/16"
+      loop: ["eastus", "westus"]
+
+    - name: Add subnet
+      azure_rm_subnet:
+        resource_group: "CentOSAnsible-{{ item }}"
+        name: "{{ item }}-mySubnet"
+        address_prefix: "10.0.1.0/24"
+        virtual_network: "{{ item }}-myVnet"
+      loop: ["eastus", "westus"]
+
+    - name: Create public IP address
+      azure_rm_publicipaddress:
+        resource_group:  "CentOSAnsible-{{ item }}"
+        allocation_method: Static
+        name: "{{ item }}-myPublicIP"
+      register: "output_ip_address"
+      loop: ["eastus", "westus"]
+
+    - name: Create Network Security Group that allows SSH   
+      azure_rm_securitygroup:
+        resource_group: "CentOSAnsible-{{ item }}"
+        name: "{{ item }}-myNetworkSecurityGroup"
+        rules:
+          - name: SSH
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 1001
+            direction: Inbound
+      loop: ["eastus", "westus"]
+
+    - name: Create virtual network interface card       
+      azure_rm_networkinterface:
+        resource_group: "CentOSAnsible-{{ item }}"
+        name: "{{ item }}-myNIC"
+        virtual_network: "{{ item }}-myVnet"
+        subnet: "{{ item }}-mySubnet"
+        public_ip_name: "{{ item }}-myPublicIP"
+        security_group: "{{ item }}-myNetworkSecurityGroup"
+      loop: ["eastus", "westus"]
+
+    - name: Create VM
+      azure_rm_virtualmachine:
+        resource_group: "CentOSAnsible-{{ item }}"
+        name: "{{ item }}-myVM"
+        vm_size: Standard_DS1_v2
+        admin_username: azureuser
+        managed_disk_type: Standard_LRS
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/azureuser/.ssh/authorized_keys
+            key_data: "{{ lookup('file', '/home/azureuser/.ssh/authorized_keys/id_rsa.pub') }}"
+        network_interfaces: "{{ item }}-myNIC"
+        loop: ["eastus", "westus"]
+        image:
+          offer: "{{ osname.offer: }}"  # Define the 'offer' variable here
+          publisher: "{{ item.publisher }}"
+          sku: "{{ item.sku }}"
+          version: "{{ item.version }}"
+      loop: 
+        - "{{ osname }}"
+
+  #loop: "["eastus", "southeastasia"]"
+
+- name: Run az-command.sh
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Execute az-command.sh
+      command: ./az-command.sh

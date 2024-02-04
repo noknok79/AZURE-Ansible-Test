@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [[ $(stat -c %Y inventory.txt) -lt $(($(date +%s) - 300)) ]]; then
+if [[ $(stat -c %Y inventory.txt) -lt $(($(date +%s) - 3000)) ]]; then
     echo "" > inventory.txt;
 else
     exit 0
 fi
 
-if [[ $(stat -c %Y inventory) -lt $(($(date +%s) - 300)) ]]; then
+if [[ $(stat -c %Y inventory) -lt $(($(date +%s) - 3000)) ]]; then
     echo "" > inventory;
 else
     exit 0

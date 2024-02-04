@@ -2,16 +2,16 @@
   hosts: localhost
   connection: local
   tasks:
-  # - name: Include variables
-  #   include_vars:
-  #     file: vars2.yaml
-  #     file: "{{  lookup('file', 'vars2.yaml') }}"
+  # - name: Include variables 
+  #   include_vars: vars2.yaml
+  # # - name: Include variables
+  # #   include_vars:
+  # #     file: vars2.yaml
+  #     file: "{{ lookup('file', 'vars2.yaml') }}"
   - name: Create resource group
     azure_rm_resourcegroup:
       name: "UbuntuAnsible-{{ item }}"
       location: "{{ item }}"
-      tags:
-        name: delete
     # loop: "{{ osname }}"
     loop: ["eastus", "westus"]
 

@@ -1,5 +1,5 @@
 - name: Delete install-app.sh file
-  hosts: ubuntu
+  hosts: centos
   tasks:
     - name: Delete file
       file:
