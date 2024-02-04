@@ -45,7 +45,7 @@ stages:
               PathtoPublish: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
               ArtifactName: 'drop'
               publishLocation: 'Container'
-              StoreAsTar: true
+              
 
   - stage: DeployMultipleVM
     jobs:
@@ -75,7 +75,7 @@ stages:
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: 'ansible-playbook multi-vm-deploy.yaml'
-              workingDirectory: 'ansible-playbook ansibles-yaml/multi-vm-deploy.yaml'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
 
   - stage: InstallAppviaAnsible
     jobs:
@@ -113,5 +113,5 @@ stages:
               azureSubscription: 'ms365enterprise'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
-              inlineScript: 'ansible-playbook ubuntu-app.yaml'
+              inlineScript: 'ansible-playbook centos-app.yaml'
               workingDirectory: '$(System.DefaultWorkingDirectory)/ansibles-yaml'
