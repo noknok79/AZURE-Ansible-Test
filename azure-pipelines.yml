@@ -71,7 +71,7 @@ stages:
               publishLocation: 'Container'
           - task: AzureCLI@2
             inputs:
-              azureSubscription: 'ms365enterprise'
+              azureSubscription: 'personal'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: 'ansible-playbook multi-vm-deploy.yaml'
@@ -101,7 +101,7 @@ stages:
           - task: AzureCLI@2
             displayName: Ubuntu Installaion using Ansible Playbok
             inputs:
-              azureSubscription: 'ms365enterprise'
+              azureSubscription: 'personal'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: 'ansible-playbook ubuntu-app.yaml'
@@ -110,7 +110,7 @@ stages:
           - task: AzureCLI@2
             displayName: Centos Installaion using Ansible Playbok
             inputs:
-              azureSubscription: 'ms365enterprise'
+              azureSubscription: 'personal'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: 'ansible-playbook centos-app.yaml'
