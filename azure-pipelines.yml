@@ -1,0 +1,127 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+# ms365enterprise
+# ansible-playbook centos-deploy.yaml
+# ansible-playbook centos-deploy.yaml
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - name: WIN365ENT_ENVIRONMENT
+    value: win365ent
+  - name: MS365ENT_ENVIRONMENT
+    value: ms365ent
+
+stages:
+  - stage: ResourcesPreparation
+    jobs:
+      - job: ResourcesPrep
+        pool:
+          vmImage: "ubuntu-latest"
+          environment: $(MS365ENT_ENVIRONMENT)
+        continueOnError: false
+        steps:
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Files to Pipeline
+            inputs:
+              targetPath: "$(System.DefaultWorkingDirectory)"
+              artifact: "ms365ent-out"
+              publishLocation: "pipeline"
+          
+
+  - stage: MS365ENTResourcesPreparation
+    jobs:
+      - job: MS365ENTResources
+        pool:
+          vmImage: "ubuntu-latest"
+          environment: $(MS365ENT_ENVIRONMENT)
+        continueOnError: true
+        steps:
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Files to Pipeline
+            inputs:
+              targetPath: "$(System.DefaultWorkingDirectory)"
+              artifact: "ms365ent-out"
+              publishLocation: "pipeline"
+          
+
+          - task: AzureCLI@2
+            displayName: Deploy VM resources Using Ansible
+            inputs:
+              azureSubscription: 'ms365enterprise'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                ansible-playbook centos-deploy.yaml
+              workingDirectory: '$(System.DefaultWorkingDirectory)/win365ent'
+          
+
+  - stage: DeployUbuntVM
+    jobs:
+      - job: DeployUbuntVM
+        pool:
+          vmImage: "ubuntu-latest"
+          environment: $(MS365ENT_ENVIRONMENT)
+        continueOnError: true
+        steps:
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Files to Pipeline
+            inputs:
+              targetPath: "$(System.DefaultWorkingDirectory)"
+              publishLocation: "pipeline"
+          
+          - task: AzureCLI@2
+            displayName: Deploy Ubuntu VM
+            inputs:
+              azureSubscription: 'ms365enterprise'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                ansible-playbook ubuntu-deploy.yaml
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+  
+  - stage: InstallAppviaAnsible
+    jobs:
+      - job: InstallAppviaAnsible
+        pool:
+          vmImage: "ubuntu-latest"
+          environment: $(MS365ENT_ENVIRONMENT)
+        continueOnError: true
+        steps:
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Files to Pipeline
+            inputs:
+              targetPath: "$(System.DefaultWorkingDirectory)"
+              publishLocation: "pipeline"
+          
+          - task: AzureCLI@2
+            displayName: Install Ubuntu Apps via Ansible
+            inputs:
+              azureSubscription: 'ms365enterprise'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                ansible-playbook ubuntu-app.yaml
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+          
+           
+          - task: AzureCLI@2
+            displayName: Install CentOS App via Ansible
+            inputs:
+              azureSubscription: 'ms365enterprise'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                ansible-playbook centos-app.yaml
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+          
