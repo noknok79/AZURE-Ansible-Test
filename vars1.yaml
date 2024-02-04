@@ -1,23 +1,26 @@
 ---
 osname:
   - region: eastus
-    os: ubuntu
+    osname: ubuntu
     sku: 18.04-lt
     publisher: canonical
     version: latest
   - region: westus 
-    os: centos
+    osname: centos
     sku: 7_8
     publisher: OpenLogic
     version: latest
   - region: centralus
-    os: debian
+    osname: debian
     sku: 10
     publisher: Debian
     version: latest
-
-
-
+locationregion:
+  - region: eastus
+    osname: ubuntu
+  - region: westus 
+    osname: centos
+ 
 
 # - hosts: localhost
 #   tasks:

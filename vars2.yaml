@@ -1,16 +1,45 @@
 ---
-- name: Playbook Name
-  hosts: all
+- hosts: localhost
+  vars:
+    locationregion:
+      - eastus
+      - westus
+      - centralus
+    osname:
+    - region: "{{ item }}"
+      osname: ubuntu
+      sku: 18.04-lt
+      publisher: canonical
+      version: latest
+    - region: "{{ item }} "
+      osname: centos
+      sku: 7_8
+      publisher: OpenLogic
+      version: latest
+    - region: "{{ item }}"
+      osname: debian
+      sku: 10
+      publisher: Debian
+      version: latest
+    loop: "{{ locationregion }}"
+
   tasks:
-    - name: OSNAME
-      osname:
-        - region: 'eastus'
-          offer: 'ubuntu'
-          sku: '18.04-lt'
-          publisher: 'canonical'
-          version: latest
-        - region: 'west'
-          offer: 'CentOS'
-          sku: '7.5'
-          publisher: 'OpenLogic'
-          version: 'latest'
+  - name: print dict variable
+    debug:
+      msg: "the region is {{ item }}"
+    loop: "{{ locationregion }}"
+  
+
+
+  # - name: Create resource group
+    #   azure_rm_resourcegroup:
+    #     name: "{{ item.region }}-RG-{{ item.osname }}"
+    #     location: "{{ item.region }}"
+    #   loop: "{{ locationregion }}"
+  
+    # - name: print dict variable
+    #   debug:
+    #     msg: "key is {{ item.key }} and value is {{ item.value }}"
+    #   with_dict: "{{ osname }}"
+    
+    # -
