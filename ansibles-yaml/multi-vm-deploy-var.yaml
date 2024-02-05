@@ -1,10 +1,22 @@
 ---
 locationregion:
+  - region: eastus
+    os: centos
+    osname: CentOS
+    publisher: OpenLogic
+    sku: '7.5'
+    version: latest
   - region: westus 
     os: centos
     osname: CentOS
     publisher: OpenLogic
     sku: '7.5'
+    version: latest
+  - region: eastus2 
+    os: ubuntu
+    osname: 0001-com-ubuntu-server-jammy 
+    sku: '22_04-lts-gen2'
+    publisher: Canonical
     version: latest
   - region: westus2
     os: ubuntu
@@ -12,15 +24,4 @@ locationregion:
     sku: '22_04-lts-gen2'
     publisher: Canonical
     version: latest
-  - region: eastus2 
-    os: centos
-    osname: CentOS
-    publisher: OpenLogic
-    sku: '7.5'
-    version: latest
-  - region: eastus2
-    os: ubuntu
-    osname: 0001-com-ubuntu-server-jammy 
-    sku: '22_04-lts-gen2'
-    publisher: Canonical
-    version: latest
+  
